@@ -9,8 +9,8 @@ object ChessPieces {
   trait DiagonalAttackTrait {
     this: ChessPiece =>
     def diagonalAttackingPositions(
-      chessPiece: ChessPiece,
-      completeBoard: ChessBoard
+        chessPiece: ChessPiece,
+        completeBoard: ChessBoard
     ): List[(Int, Int)] = {
       var board = completeBoard.map(x => x._1)
       var blackList = List.empty[(Int, Int)]
@@ -31,7 +31,20 @@ object ChessPieces {
   sealed trait ChessPiece {
     def board: ChessBoard.ChessBoard
     def position: PiecePosition
-    def canCaptureOther(chessPiece: ChessPiece): Boolean
+    def canCaptureOther(otherPiece: ChessPiece): Boolean = {
+      var myAttackingPositions = attackingPositions(this.board)
+      if (!otherPiece.isInstanceOf[Blank]) {
+        if (myAttackingPositions.contains(
+              (otherPiece.position._1, otherPiece.position._2)
+            )) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    }
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
   }
 
