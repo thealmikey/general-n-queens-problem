@@ -5,29 +5,10 @@ import com.almikey.chesschallenge.ChessBoard.ChessBoard
 object ChessPieces {
 
   type PiecePosition = (Int, Int)
-
-  trait DiagonalAttackTrait {
-    this: ChessPiece =>
-    def diagonalAttackingPositions(
-        chessPiece: ChessPiece,
-        completeBoard: ChessBoard
-    ): List[(Int, Int)] = {
-      var board = completeBoard.map(x => x._1)
-      var blackList = List.empty[(Int, Int)]
-      for (n <- board) {
-        if ((n._2 - n._1 == chessPiece.position._2 - chessPiece.position._1
-            || n._2 + n._1 == chessPiece.position._2 + chessPiece.position._1) && (
-              n._1,
-              n._2
-            ) != this.position) {
-          blackList :+= (n._1, n._2)
-          println(this.position == (n._1, n._2))
-        }
-      }
-      blackList
-    }
-  }
-
+  /*
+    A chess Piece has a Board and a position on the board. It can calculate
+    all the positions it can attack on its own board through myAttackingPositions
+   */
   sealed trait ChessPiece {
     def board: ChessBoard.ChessBoard
     def position: PiecePosition
@@ -47,7 +28,10 @@ object ChessPieces {
     }
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
   }
-
+  /*
+We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces
+and doesn't have positions it can  attack
+   */
   case class Blank(var position: PiecePosition = (0, 0),
                    var board: ChessBoard = Vector.empty)
       extends ChessPiece {
