@@ -9,7 +9,7 @@ class KnightPieceTest extends FlatSpec with Matchers {
     var knight: ChessPiece = Knight((1, 1), twoByTwoBoard)
     knight.attackingPositions(twoByTwoBoard) shouldEqual Nil
   }
-  it should "return true if another piece is in its attack position" in {
+  it should "have its capture method return true if another piece is in its attack position" in {
     var threeByThreeBoard = ChessBoard.generateBoard(3, 3)
     var knight1: ChessPiece = Knight((1, 1), threeByThreeBoard)
     var knight2: ChessPiece = Knight((2, 3), threeByThreeBoard)
