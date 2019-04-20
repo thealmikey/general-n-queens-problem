@@ -102,7 +102,7 @@ and doesn't have positions it can  attack
     }
   }
 
-  case class Bishop(var position: (Int, Int))
+  case class Bishop(var position: PiecePosition)
       extends ChessPiece
       with DiagonalAttackTrait {
 
@@ -111,14 +111,14 @@ and doesn't have positions it can  attack
 
   }
 
-  case class Rook(var position: (Int, Int))
+  case class Rook(var position: PiecePosition)
       extends ChessPiece
       with HorizontalVerticalAttackTrait {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       verticalHorizontalAttackingPositions(this, board)
   }
 
-  case class Queen(var position: (Int, Int))
+  case class Queen(var position: PiecePosition)
       extends ChessPiece
       with HorizontalVerticalAttackTrait
       with DiagonalAttackTrait {
@@ -129,4 +129,60 @@ and doesn't have positions it can  attack
       )
   }
 
+  case class King(var position: PiecePosition) extends ChessPiece {
+    override def attackingPositions(board: ChessBoard): List[(Int, Int)] = {
+      if (board.length > 2) {
+        var blackList = List.empty[(Int, Int)]
+        var moveCombo1 = List(1, -1)
+        var moveCombo2 = List(-1, 1)
+        var moveCombo3 = List(0, 1)
+        var moveCombo4 = List(-1, 0)
+
+        var move1Then2 = for {
+          n <- moveCombo1
+          m <- moveCombo2
+        } yield (n, m)
+        var move2Then1 = for {
+          n <- moveCombo2
+          m <- moveCombo1
+        } yield (n, m)
+        var move3Then4 = for {
+          n <- moveCombo3
+          m <- moveCombo4
+        } yield (n, m)
+        var move4Then3 = for {
+          n <- moveCombo4
+          m <- moveCombo3
+        } yield (n, m)
+
+        var legalMoves =
+          (move1Then2 ++ move2Then1 ++ move3Then4 ++ move4Then3).distinct
+        println(legalMoves)
+        var allPositions = for {
+          n <- legalMoves
+        } yield {
+          var pos1 = position._1 + n._1
+          var pos2 = position._2 + n._2
+          if (pos1 > 0 && pos2 > 0) {
+            (pos1, pos2)
+          } else {
+            (0, 0)
+          }
+        }
+        var boardPositions = board.map(x => x._1)
+        for (m <- allPositions) {
+          if ((m._1 != 0 && m._2 != 0 && boardPositions.indexOf((m._1, m._2)) != -1) && (
+                m._1,
+                m._2
+              ) != this.position) {
+            blackList :+= (m._1, m._2)
+
+          }
+        }
+        blackList
+      } else {
+        Nil
+      }
+    }
+  }
 }
