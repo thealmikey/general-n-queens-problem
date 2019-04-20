@@ -115,4 +115,14 @@ and doesn't have positions it can  attack
       verticalHorizontalAttackingPositions(this, board)
   }
 
+  case class Queen(var position: (Int, Int), board: ChessBoard)
+      extends ChessPiece
+      with HorizontalVerticalAttackTrait
+      with DiagonalAttackTrait {
+    override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
+      diagonalAttackingPositions(this, board) ++ verticalHorizontalAttackingPositions(
+        this,
+        board)
+  }
+
 }

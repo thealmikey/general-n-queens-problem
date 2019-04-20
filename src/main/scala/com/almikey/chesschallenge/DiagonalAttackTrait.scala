@@ -6,8 +6,8 @@ import ChessBoard._
 trait DiagonalAttackTrait {
   this: ChessPiece =>
   def diagonalAttackingPositions(
-      chessPiece: ChessPiece,
-      completeBoard: ChessBoard
+    chessPiece: ChessPiece,
+    completeBoard: ChessBoard
   ): List[(Int, Int)] = {
     var board = completeBoard.map(x => x._1)
     var blackList = List.empty[(Int, Int)]
@@ -18,7 +18,6 @@ trait DiagonalAttackTrait {
             n._2
           ) != this.position) {
         blackList :+= (n._1, n._2)
-        println(this.position == (n._1, n._2))
       }
     }
     blackList
