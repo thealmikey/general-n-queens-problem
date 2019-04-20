@@ -102,10 +102,17 @@ and doesn't have positions it can  attack
   case class Bishop(var position: (Int, Int), board: ChessBoard)
       extends ChessPiece
       with DiagonalAttackTrait {
-    override def canCaptureOther(chessPiece: ChessPiece): Boolean = ???
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       diagonalAttackingPositions(this, board)
+
+  }
+
+  case class Rook(var position: (Int, Int), board: ChessBoard)
+      extends ChessPiece
+      with HorizontalVerticalAttackTrait {
+    override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
+      verticalHorizontalAttackingPositions(this, board)
   }
 
 }
