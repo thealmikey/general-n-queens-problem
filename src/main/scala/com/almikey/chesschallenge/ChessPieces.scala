@@ -157,7 +157,7 @@ and doesn't have positions it can  attack
 
         var legalMoves =
           (move1Then2 ++ move2Then1 ++ move3Then4 ++ move4Then3).distinct
-        println(legalMoves)
+//        println(legalMoves)
         var allPositions = for {
           n <- legalMoves
         } yield {
