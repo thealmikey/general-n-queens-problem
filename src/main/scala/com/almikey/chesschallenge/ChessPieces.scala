@@ -7,17 +7,33 @@ object ChessPieces {
   type PiecePosition = (Int, Int)
 
   sealed trait ChessPiece {
+    def board: ChessBoard.ChessBoard
     def position: PiecePosition
     def canCaptureOther(chessPiece: ChessPiece): Boolean
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
   }
-  case class Blank(var position: PiecePosition = (0, 0)) extends ChessPiece {
+  case class Blank(var position: PiecePosition = (0, 0),
+                   var board: ChessBoard = Vector.empty)
+      extends ChessPiece {
     override def canCaptureOther(chessPiece: ChessPiece): Boolean = false
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = Nil
   }
-  case class Knight(var position: PiecePosition) extends ChessPiece {
-    override def canCaptureOther(chessPiece: ChessPiece): Boolean = ???
+  case class Knight(var position: PiecePosition, var board: ChessBoard)
+      extends ChessPiece {
+    override def canCaptureOther(otherPiece: ChessPiece): Boolean = {
+      var myAttackingPositions = attackingPositions(this.board)
+      if (!otherPiece.isInstanceOf[Blank]) {
+        if (myAttackingPositions.contains(
+              (otherPiece.position._1, otherPiece.position._2))) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    }
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = {
       if (board.length > 2) {
