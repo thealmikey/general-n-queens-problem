@@ -1,6 +1,6 @@
 package com.almikey.chesschallenge
 
-import com.almikey.chesschallenge.ChessPieces.{Blank, ChessPiece}
+import com.almikey.chesschallenge.ChessPieces.{Blank, ChessPiece, Knight}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ChessBoardTest extends FlatSpec with Matchers {
@@ -14,5 +14,10 @@ class ChessBoardTest extends FlatSpec with Matchers {
     newBoard.foreach { x =>
       assert(x._2.isInstanceOf[Blank])
     }
+  }
+  "placing a ChessPiece on 1 by 1 board" should "have a board with the same chessPiece" in {
+    var oneByOneBoard = ChessBoard.generateBoard(1, 1)
+    var knightKing = Knight((1, 1))
+    println(ChessBoard.placePieceOnBoard(oneByOneBoard, knightKing, (1, 1)))
   }
 }

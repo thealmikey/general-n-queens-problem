@@ -14,10 +14,10 @@ object ChessPieces {
     all the positions it can attack on its own board through the attackingPositions()
    */
   sealed trait ChessPiece {
-    def board: ChessBoard.ChessBoard
+    var board: ChessBoard.ChessBoard = _
     def position: PiecePosition
-    def canCaptureOther(otherPiece: ChessPiece): Boolean = {
-      var myAttackingPositions = attackingPositions(this.board)
+    def canCaptureOther(otherPiece: ChessPiece, board: ChessBoard): Boolean = {
+      var myAttackingPositions = attackingPositions(board)
       if (!otherPiece.isInstanceOf[Blank]) {
         if (myAttackingPositions.contains(
               (otherPiece.position._1, otherPiece.position._2)
@@ -31,24 +31,22 @@ object ChessPieces {
       }
     }
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
-    def attackingPositions() = attackingPositions(this.board)
   }
   /*
 We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces
 and doesn't have positions it can  attack
    */
-  case class Blank(var position: PiecePosition = (0, 0),
-                   var board: ChessBoard = Vector.empty)
-      extends ChessPiece {
-    override def canCaptureOther(chessPiece: ChessPiece): Boolean = false
+  case class Blank(var position: PiecePosition = (0, 0)) extends ChessPiece {
+    override def canCaptureOther(chessPiece: ChessPiece,
+                                 board: ChessBoard): Boolean = false
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = Nil
   }
 
-  case class Knight(var position: PiecePosition, var board: ChessBoard)
-      extends ChessPiece {
-    override def canCaptureOther(otherPiece: ChessPiece): Boolean = {
-      var myAttackingPositions = attackingPositions(this.board)
+  case class Knight(var position: PiecePosition) extends ChessPiece {
+    override def canCaptureOther(otherPiece: ChessPiece,
+                                 board: ChessBoard): Boolean = {
+      var myAttackingPositions = attackingPositions(board)
       if (!otherPiece.isInstanceOf[Blank]) {
         if (myAttackingPositions.contains(
               (otherPiece.position._1, otherPiece.position._2)
@@ -104,7 +102,7 @@ and doesn't have positions it can  attack
     }
   }
 
-  case class Bishop(var position: (Int, Int), board: ChessBoard)
+  case class Bishop(var position: (Int, Int))
       extends ChessPiece
       with DiagonalAttackTrait {
 
@@ -113,21 +111,22 @@ and doesn't have positions it can  attack
 
   }
 
-  case class Rook(var position: (Int, Int), board: ChessBoard)
+  case class Rook(var position: (Int, Int))
       extends ChessPiece
       with HorizontalVerticalAttackTrait {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       verticalHorizontalAttackingPositions(this, board)
   }
 
-  case class Queen(var position: (Int, Int), board: ChessBoard)
+  case class Queen(var position: (Int, Int))
       extends ChessPiece
       with HorizontalVerticalAttackTrait
       with DiagonalAttackTrait {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       diagonalAttackingPositions(this, board) ++ verticalHorizontalAttackingPositions(
         this,
-        board)
+        board
+      )
   }
 
 }
