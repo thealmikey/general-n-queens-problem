@@ -21,19 +21,70 @@ which can't capture and basically represents an empty slot
     chessBoardSeq
   }
 
-  def placePieceOnBoard(chessBoard: ChessBoard,
-                        chessPiece: ChessPiece,
-                        position: Position): (ChessBoard, Boolean) = {
+  /*
+  We place a piece on the chess board. It can either succeed or fail,
+   depending on some condition encapsulated in a method f. Returning Left(Chessboard) on failure
+  and Right(Chessboard) to signify success
+   */
+  def placePieceOnBoard(
+      chessBoard: ChessBoard,
+      chessPiece: ChessPiece,
+      position: Position,
+      placesWeCantGo: Vector[(Int, Int)]
+  ): Either[(ChessBoard, Vector[(Int, Int)]),
+            (ChessBoard, Vector[(Int, Int)])] = {
     var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
-    println(indexOfPosition)
-    if (indexOfPosition == -1) {
-      return (chessBoard, false)
+    //println(indexOfPosition)
+    if (indexOfPosition == -1 && placesWeCantGo.contains(position)) {
+      return Left((chessBoard, placesWeCantGo))
     } else {
-      println(chessBoard)
-      var changedBoard =
+      //println(chessBoard)
+      var changedBoard: ChessBoard =
         chessBoard.updated(indexOfPosition, (position, chessPiece))
+      var placesWeCantGo2 = placesWeCantGo
+      placesWeCantGo2 =
+        placesWeCantGo2.++(chessPiece.attackingPositions(changedBoard).toVector)
+      // println(chessPiece.attackingPositions(changedBoard))
+      return Right((changedBoard, placesWeCantGo2))
+    }
+  }
 
-      return (changedBoard, true)
+  def removePieceFromBoard(
+      chessBoard: ChessBoard,
+      chessPiece: ChessPiece,
+      position: Position,
+      placesWeCantGo: Vector[(Int, Int)]
+  ): Either[(ChessBoard, Vector[(Int, Int)]),
+            (ChessBoard, Vector[(Int, Int)])] = {
+    var indexOfPosition = chessBoard.indexOf((position, chessPiece))
+    // println(indexOfPosition)
+    if (indexOfPosition == -1) {
+      return Left((chessBoard, placesWeCantGo))
+    } else {
+      //println(chessBoard)
+      var changedBoard: ChessBoard =
+        chessBoard.updated(indexOfPosition, (position, Blank(position)))
+      var placesWeCantGo2 = placesWeCantGo
+      //      placesWeCantGo2 =
+      //        placesWeCantGo2.++(chessPiece.attackingPositions(changedBoard).toVector)
+      chessPiece.attackingPositions(changedBoard).foreach { x =>
+        placesWeCantGo2 = dropFirstMatch(placesWeCantGo2, x).toVector
+      }
+      // println(chessPiece.attackingPositions(changedBoard))
+      return Right((changedBoard, placesWeCantGo2))
+    }
+  }
+//method to drop the first matching element from a Vector
+  def dropFirstMatch[A](ls: Seq[A], value: A): Seq[A] = {
+    val index = ls.indexOf(value) //index is -1 if there is no match
+    if (index < 0) {
+      ls
+    } else if (index == 0) {
+      ls.tail
+    } else {
+      // splitAt keeps the matching element in the second group
+      val (a, b) = ls.splitAt(index)
+      a ++ b.tail
     }
   }
 }
