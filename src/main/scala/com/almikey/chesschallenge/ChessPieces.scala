@@ -6,12 +6,29 @@ object ChessPieces {
 
   type PiecePosition = (Int, Int)
 
+  trait DiagonalAttackTrait {
+    def diagonalAttackingPositions(
+        chessPiece: ChessPiece,
+        completeBoard: ChessBoard): List[(Int, Int)] = {
+      var board = completeBoard.map(x => x._1)
+      var blackList = List.empty[(Int, Int)]
+      for (n <- board) {
+        if (n._2 - n._1 == chessPiece.position._2 - chessPiece.position._1
+            || n._2 + n._1 == chessPiece.position._2 + chessPiece.position._1) {
+          blackList :+= (n._1, n._2)
+        }
+      }
+      blackList
+    }
+  }
+
   sealed trait ChessPiece {
     def board: ChessBoard.ChessBoard
     def position: PiecePosition
     def canCaptureOther(chessPiece: ChessPiece): Boolean
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
   }
+
   case class Blank(var position: PiecePosition = (0, 0),
                    var board: ChessBoard = Vector.empty)
       extends ChessPiece {
@@ -19,6 +36,7 @@ object ChessPieces {
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = Nil
   }
+
   case class Knight(var position: PiecePosition, var board: ChessBoard)
       extends ChessPiece {
     override def canCaptureOther(otherPiece: ChessPiece): Boolean = {
@@ -76,4 +94,14 @@ object ChessPieces {
       }
     }
   }
+
+  case class Bishop(var position: (Int, Int), board: ChessBoard)
+      extends ChessPiece
+      with DiagonalAttackTrait {
+    override def canCaptureOther(chessPiece: ChessPiece): Boolean = ???
+
+    override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
+      diagonalAttackingPositions(this, board)
+  }
+
 }
