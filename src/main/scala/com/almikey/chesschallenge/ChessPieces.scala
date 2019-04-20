@@ -1,13 +1,17 @@
 package com.almikey.chesschallenge
 
 import com.almikey.chesschallenge.ChessBoard.ChessBoard
+import com.almikey.chesschallenge.SharedChessPieceTraits.{
+  DiagonalAttackTrait,
+  HorizontalVerticalAttackTrait
+}
 
 object ChessPieces {
 
   type PiecePosition = (Int, Int)
   /*
     A chess Piece has a Board and a position on the board. It can calculate
-    all the positions it can attack on its own board through myAttackingPositions
+    all the positions it can attack on its own board through the attackingPositions()
    */
   sealed trait ChessPiece {
     def board: ChessBoard.ChessBoard
@@ -27,6 +31,7 @@ object ChessPieces {
       }
     }
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
+    def attackingPositions() = attackingPositions(this.board)
   }
   /*
 We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces
