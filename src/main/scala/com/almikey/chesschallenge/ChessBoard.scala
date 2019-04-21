@@ -23,24 +23,27 @@ which can't capture and basically represents an empty slot
 
   /*
   We place a piece on the chess board. It can either succeed or fail,
-   depending on some condition encapsulated in a method f. Returning Left(Chessboard) on failure
-  and Right(Chessboard) to signify success
+   depending on some condition encapsulated in a method f. Returning Left(Chessboard,noGoPositionsVector) on failure
+  and Right(Chessboard,noGoPositionsVector) to signify success.
+  noGoPositionsVector represents fields on the board we can't go to due to placing some pieces on the board,
+   i.e. positions that are under attack
    */
   def placePieceOnBoard(
-      chessBoard: ChessBoard,
-      chessPiece: ChessPiece,
-      position: Position,
-      placesWeCantGo: Vector[(Int, Int)]
+    chessBoard: ChessBoard,
+    chessPiece: ChessPiece,
+    position: Position,
+    placesWeCantGo: Vector[(Int, Int)],
+    conditionCheck: ChessPiece => Boolean
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
     var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
-    //println(indexOfPosition)
-    if (indexOfPosition == -1 && placesWeCantGo.contains(position)) {
+    if (conditionCheck(chessPiece) || indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
     } else {
-      //println(chessBoard)
+      chessPiece.position = position
       var changedBoard: ChessBoard =
         chessBoard.updated(indexOfPosition, (position, chessPiece))
+      //convert placesWeCantGo Vector to a var so we can mutate it
       var placesWeCantGo2 = placesWeCantGo
       placesWeCantGo2 =
         placesWeCantGo2.++(chessPiece.attackingPositions(changedBoard).toVector)
@@ -49,11 +52,27 @@ which can't capture and basically represents an empty slot
     }
   }
 
+  /*
+  Takes a Vector of Positions we cant go to and creates a function that can now take a position
+  and tell you if it's in that List
+  e.g. var noGoPositions = Vector((1,1),(1,2),(1,3))
+  def willCheckIfInNoGoPosition:(Int,Int)=>Boolean = tellMeIfInNoGoListBuilder(noGoPositions)
+  then we can use it
+  willCheckIfInNoGoPosition((1,1)) will return true
+   */
+  def tellMeIfInNoGoListBuilder(
+    noGoPositions: Vector[(Int, Int)]
+  ): ChessPiece => Boolean = { s =>
+    {
+      noGoPositions.contains(s.position)
+    }
+  }
+
   def removePieceFromBoard(
-      chessBoard: ChessBoard,
-      chessPiece: ChessPiece,
-      position: Position,
-      placesWeCantGo: Vector[(Int, Int)]
+    chessBoard: ChessBoard,
+    chessPiece: ChessPiece,
+    position: Position,
+    placesWeCantGo: Vector[(Int, Int)]
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
     var indexOfPosition = chessBoard.indexOf((position, chessPiece))

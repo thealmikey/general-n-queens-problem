@@ -15,9 +15,20 @@ class ChessBoardTest extends FlatSpec with Matchers {
       assert(x._2.isInstanceOf[Blank])
     }
   }
-  "placing a ChessPiece on 1 by 1 board" should "have a board with the same chessPiece" in {
+  "placing a ChessPiece on 1 by 1 board" should "have a board with the same chessPiece and no attack positions" in {
     var oneByOneBoard = ChessBoard.generateBoard(1, 1)
     var knightKing = Knight((1, 1))
-    println(ChessBoard.placePieceOnBoard(oneByOneBoard, knightKing, (1, 1)))
+    var expected =
+      Right((Vector(((1, 1), Knight(1, 1))), Vector.empty[(Int, Int)]))
+    def alwayPassingCondition = (_: ChessPiece) => false
+    var result = ChessBoard.placePieceOnBoard(
+      oneByOneBoard,
+      knightKing,
+      (1, 1),
+      Vector.empty[(Int, Int)],
+      alwayPassingCondition
+    )
+    println(result)
+    expected shouldEqual result
   }
 }

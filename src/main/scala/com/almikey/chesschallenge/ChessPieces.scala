@@ -15,7 +15,7 @@ object ChessPieces {
    */
   sealed trait ChessPiece {
     var board: ChessBoard.ChessBoard = _
-    def position: PiecePosition
+    var position: PiecePosition
     def canCaptureOther(otherPiece: ChessPiece, board: ChessBoard): Boolean = {
       var myAttackingPositions = attackingPositions(board)
       if (!otherPiece.isInstanceOf[Blank]) {
