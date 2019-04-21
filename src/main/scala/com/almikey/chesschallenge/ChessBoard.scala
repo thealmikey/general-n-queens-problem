@@ -26,7 +26,7 @@ which can't capture and basically represents an empty slot
    depending on some condition encapsulated in a method f. Returning Left(Chessboard,noGoPositionsVector) on failure
   and Right(Chessboard,noGoPositionsVector) to signify success.
   noGoPositionsVector represents fields on the board we can't go to due to placing some pieces on the board,
-   i.e. positions that are under attack
+   i.e. positions that are under attack - we generate them as we place pieces.
    */
   def placePieceOnBoard(
       chessBoard: ChessBoard,
@@ -39,6 +39,7 @@ which can't capture and basically represents an empty slot
     //check if position is blank and is occupied by blank
 //    def checkIfSlotIsEmpty()
     var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
+    chessPiece.position = position
     if (conditionCheck(chessPiece) || indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
     } else {
@@ -58,6 +59,7 @@ which can't capture and basically represents an empty slot
   Takes a Vector of Positions we cant go to and creates a function that can now take a position
   and tell you if it's in that List
   e.g. var noGoPositions = Vector((1,1),(1,2),(1,3))
+  now we build a method to tell us if piece is in that list
   def willCheckIfInNoGoPosition:(Int,Int)=>Boolean = tellMeIfInNoGoListBuilder(noGoPositions)
   then we can use it
   willCheckIfInNoGoPosition((1,1)) will return true
@@ -71,6 +73,8 @@ which can't capture and basically represents an empty slot
       var pieceOnBoardUnderAttack = piecesOnBoard.exists { position =>
         attackPositionsOfPiece.contains(position)
       }
+      println("badspots in checker", badSpots)
+      println("s position", s)
       badSpots.contains(s.position) || pieceOnBoardUnderAttack
     }
 

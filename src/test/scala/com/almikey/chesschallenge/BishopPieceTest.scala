@@ -12,8 +12,10 @@ class BishopPieceTest extends FlatSpec with Matchers {
     bishop.attackingPositions(oneByTwoBoard) shouldEqual Nil
   }
   it should "attack 1 spaces in a 2 by 2 board" in {
-    var threeByThreeBoard = ChessBoard.generateBoard(2, 2)
+    var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
     var bishop: ChessPiece = Bishop((1, 1))
-    bishop.attackingPositions(threeByThreeBoard).size shouldEqual 1
+    var expectedAttackingPositions = Vector((2, 2))
+    bishop.attackingPositions(twoByTwoBoard).size shouldEqual 1
+    bishop.attackingPositions(twoByTwoBoard) shouldEqual expectedAttackingPositions
   }
 }
