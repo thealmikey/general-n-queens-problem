@@ -29,13 +29,15 @@ which can't capture and basically represents an empty slot
    i.e. positions that are under attack
    */
   def placePieceOnBoard(
-    chessBoard: ChessBoard,
-    chessPiece: ChessPiece,
-    position: Position,
-    placesWeCantGo: Vector[(Int, Int)],
-    conditionCheck: ChessPiece => Boolean
+      chessBoard: ChessBoard,
+      chessPiece: ChessPiece,
+      position: Position,
+      placesWeCantGo: Vector[(Int, Int)],
+      conditionCheck: ChessPiece => Boolean
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
+    //check if position is blank and is occupied by blank
+//    def checkIfSlotIsEmpty()
     var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
     if (conditionCheck(chessPiece) || indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
@@ -60,23 +62,27 @@ which can't capture and basically represents an empty slot
   then we can use it
   willCheckIfInNoGoPosition((1,1)) will return true
    */
-  def tellMeIfInNoGoListBuilder(
-    noGoPositions: Vector[(Int, Int)]
-  ): ChessPiece => Boolean = { s =>
-    {
-      noGoPositions.contains(s.position)
+  def tellMeIfNoGoMethodBuilder(badSpots: Vector[(Int, Int)],
+                                board: ChessBoard): ChessPiece => Boolean =
+    s => {
+      var piecesOnBoard =
+        board.filterNot(piece => piece._2.isInstanceOf[Blank]).map(_._1)
+      var attackPositionsOfPiece = s.attackingPositions(board)
+      var pieceOnBoardUnderAttack = piecesOnBoard.exists { position =>
+        attackPositionsOfPiece.contains(position)
+      }
+      badSpots.contains(s.position) || pieceOnBoardUnderAttack
     }
-  }
 
   def removePieceFromBoard(
-    chessBoard: ChessBoard,
-    chessPiece: ChessPiece,
-    position: Position,
-    placesWeCantGo: Vector[(Int, Int)]
+      chessBoard: ChessBoard,
+      chessPiece: ChessPiece,
+      position: Position,
+      placesWeCantGo: Vector[(Int, Int)]
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
-    var indexOfPosition = chessBoard.indexOf((position, chessPiece))
-    // println(indexOfPosition)
+    var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
+//    println(indexOfPosition)
     if (indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
     } else {
