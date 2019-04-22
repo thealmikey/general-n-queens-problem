@@ -129,13 +129,13 @@ object ChessMain extends App {
 //  def normalizeInput(str: String): ((Int, Int), List[ChessPiece]) = {}
 
   def normalizeInput(myString: String): ((Int, Int), List[ChessPiece]) = {
-    var inputArr = myString.split("board containing")
+    var inputArr = myString.split("board containing|board with|board that has")
     var firstPart = inputArr(0).trim
     var myBoardDimensionsArr =
       firstPart.split("x").map(y => y.trim).map(_.toInt)
     var myBoardDimenTuple = (myBoardDimensionsArr(0), myBoardDimensionsArr(1))
     var secondPart = inputArr(1).trim
-    var rawPieces = secondPart.split("and").map(x => x.trim).map { y =>
+    var rawPieces = secondPart.split("and|,").map(x => x.trim).map { y =>
       var splitSpace = y.split(" ")
       (splitSpace(0), splitSpace(1))
     }
