@@ -77,7 +77,7 @@ object ChessMain extends App {
   }
 
   def createPermutationsOfInput(
-    inputList: List[ChessPiece]
+      inputList: List[ChessPiece]
   ): List[List[ChessPiece]] = {
     inputList.permutations.toList
   }
@@ -101,4 +101,27 @@ object ChessMain extends App {
     }
     resultingConfigurations.filter(_.size > 0).distinct
   }
+
+  def getAllPosibleConfigs(inputList: List[ChessPiece],
+                           chessBoard: ChessBoard): Vector[ChessBoard] = {
+    var results: Vector[ChessBoard] = Vector.empty[ChessBoard]
+    var inputPermutations = createPermutationsOfInput(inputList)
+    for (permutation <- inputPermutations) {
+      results = results ++ shiftStartIndexVariations(permutation, chessBoard)
+    }
+    return results.distinct
+  }
+
+  def calculateTimeTakenAndPrintResults(f: () => Vector[ChessBoard]) = {
+    def printResults(results: Vector[ChessBoard]) = {
+      results.foreach(x => println(x + "\n"))
+    }
+    var startTime = System.currentTimeMillis()
+    var theans = f()
+    var endTime = System.currentTimeMillis()
+    printResults(theans)
+    println("number of permutations:", theans.size)
+    println("time take is:", (endTime - startTime) / 1000, "seconds")
+  }
+
 }
