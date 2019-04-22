@@ -8,6 +8,7 @@ class RookPieceTest extends FlatSpec with Matchers {
   "A Rook piece" should "should have no positions to attack if the board is 1 by 1" in {
     var oneByOneBoard = ChessBoard.generateBoard(1, 1)
     var rook: ChessPiece = Rook()
+    rook.position = (1, 1)
     rook.attackingPositions(oneByOneBoard) shouldEqual Nil
   }
   it should "attack 2 spaces in a 2 by 2 board" in {

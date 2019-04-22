@@ -1,6 +1,5 @@
 package com.almikey.chesschallenge
 
-import com.almikey.chesschallenge.ChessBoard.Position
 import com.almikey.chesschallenge.ChessPieces.{Blank, ChessPiece}
 
 object ChessBoard {
@@ -29,11 +28,11 @@ which can't capture and basically represents an empty slot
    i.e. positions that are under attack - we generate them as we place pieces.
    */
   def placePieceOnBoard(
-      chessBoard: ChessBoard,
-      chessPiece: ChessPiece,
-      position: Position,
-      placesWeCantGo: Vector[(Int, Int)],
-      conditionCheck: ChessPiece => Boolean
+    chessBoard: ChessBoard,
+    chessPiece: ChessPiece,
+    position: Position,
+    placesWeCantGo: Vector[(Int, Int)],
+    conditionCheck: ChessPiece => Boolean
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
     //check if position is blank and is occupied by blank
@@ -60,12 +59,12 @@ which can't capture and basically represents an empty slot
   and tell you if it's in that List
   e.g. var noGoPositions = Vector((1,1),(1,2),(1,3))
   now we build a method to tell us if piece is in that list
-  def willCheckIfInNoGoPosition:(Int,Int)=>Boolean = tellMeIfInNoGoListBuilder(noGoPositions)
+  def willCheckIfInNoGoPosition:(Int,Int)=>Boolean = tellMeIfInNoGoMethodBuilder(noGoPositions)
   then we can use it
   willCheckIfInNoGoPosition((1,1)) will return true
    */
-  def tellMeIfNoGoMethodBuilder(badSpots: Vector[(Int, Int)],
-                                board: ChessBoard): ChessPiece => Boolean =
+  def tellMeIfNoGoZoneMethodBuilder(badSpots: Vector[(Int, Int)],
+                                    board: ChessBoard): ChessPiece => Boolean =
     s => {
       var piecesOnBoard =
         board.filterNot(piece => piece._2.isInstanceOf[Blank]).map(_._1)
@@ -79,10 +78,10 @@ which can't capture and basically represents an empty slot
     }
 
   def removePieceFromBoard(
-      chessBoard: ChessBoard,
-      chessPiece: ChessPiece,
-      position: Position,
-      placesWeCantGo: Vector[(Int, Int)]
+    chessBoard: ChessBoard,
+    chessPiece: ChessPiece,
+    position: Position,
+    placesWeCantGo: Vector[(Int, Int)]
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
     var indexOfPosition = chessBoard.indexOf((position, chessPiece))

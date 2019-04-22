@@ -97,7 +97,7 @@ class ChessBoardTest extends FlatSpec with Matchers {
       )
       .merge
     def chekingCondition =
-      ChessBoard.tellMeIfNoGoMethodBuilder(noGoSlots, newBoard)
+      ChessBoard.tellMeIfNoGoZoneMethodBuilder(noGoSlots, newBoard)
     var result = ChessBoard.placePieceOnBoard(
       newBoard,
       bishop2,
@@ -192,7 +192,7 @@ class ChessBoardTest extends FlatSpec with Matchers {
     var chessBoard2 = placeKnight1.merge
 //    println(chessBoard2)
     var checkingCondition =
-      ChessBoard.tellMeIfNoGoMethodBuilder(chessBoard2._2, chessBoard2._1)
+      ChessBoard.tellMeIfNoGoZoneMethodBuilder(chessBoard2._2, chessBoard2._1)
     var placeBishop2 = ChessBoard.placePieceOnBoard(
       chessBoard2._1,
       bishop2,
