@@ -79,7 +79,7 @@ object ChessMain extends App {
   }
 
   def createPermutationsOfInput(
-    inputList: List[ChessPiece]
+      inputList: List[ChessPiece]
   ): List[List[ChessPiece]] = {
     inputList.permutations.toList
   }
@@ -128,34 +128,57 @@ object ChessMain extends App {
 
 //  def normalizeInput(str: String): ((Int, Int), List[ChessPiece]) = {}
 
-  def normalizeInput(myString: String): ((Int, Int), List[ChessPiece]) = {
+  def normalizeInput(
+      myString: String
+  ): Either[Throwable, ((Int, Int), List[ChessPiece])] = {
     var inputArr = myString.split("board containing|board with|board that has")
-    var firstPart = inputArr(0).trim
-    var myBoardDimensionsArr =
-      firstPart.split("x").map(y => y.trim).map(_.toInt)
-    var myBoardDimenTuple = (myBoardDimensionsArr(0), myBoardDimensionsArr(1))
-    var secondPart = inputArr(1).trim
-    var rawPieces = secondPart.split("and|,").map(x => x.trim).map { y =>
-      var splitSpace = y.split(" ")
-      (splitSpace(0), splitSpace(1))
-    }
-    def stringToChessPiece(str: String): ChessPiece = {
-      str.capitalize match {
-        case "Rooks" | "Rook"     => Rook()
-        case "Knights" | "Knight" => Knight()
-        case "Kings" | "King"     => King()
-        case "Bishops" | "Bishop" => Bishop()
-        case "Queens" | "Queen"   => Queen()
+    if (inputArr.size < 2) {
+      Left(new Throwable("bad input from console"))
+    } else {
+      var firstPart = inputArr(0).trim
+      var myBoardDimensionsArr =
+        firstPart.split("x|X").map(y => y.trim).filter(!_.isEmpty).map(_.toInt)
+      if (myBoardDimensionsArr.size < 2) {
+        Left(new Throwable("bad input for dimensions"))
+      } else {
+        var myBoardDimenTuple =
+          (myBoardDimensionsArr(0), myBoardDimensionsArr(1))
+        var secondPart = inputArr(1).trim
+        var rawPieces = secondPart.split("and|,").map(x => x.trim).map { y =>
+          var splitSpace = y.split(" ")
+          (splitSpace(0), splitSpace(1))
+        }
+        if (rawPieces.isEmpty) {
+          Left(new Throwable("bad input from chess pieces"))
+        } else {
+          def stringToChessPiece(str: String): ChessPiece = {
+            str.capitalize match {
+              case "Rooks" | "Rook"     => Rook()
+              case "Knights" | "Knight" => Knight()
+              case "Kings" | "King"     => King()
+              case "Bishops" | "Bishop" => Bishop()
+              case "Queens" | "Queen"   => Queen()
+              case _                    => Blank()
+            }
+          }
+
+          var myNestedPieces = rawPieces.map { x =>
+            var filler = x._1.toInt
+            var thePiece = stringToChessPiece(x._2)
+            List.fill(filler)(thePiece)
+          }
+          var myInputPieces =
+            myNestedPieces.toList.flatten
+          var withBadInputRemoved = myInputPieces.filter(!_.isInstanceOf[Blank])
+          if (myInputPieces.size > withBadInputRemoved.size) {
+            Left(new Throwable("bad input for one of the chess pieces"))
+          } else {
+            println(myBoardDimenTuple, myInputPieces)
+            Right((myBoardDimenTuple, myInputPieces))
+          }
+        }
       }
     }
-    var myNestedPieces = rawPieces.map { x =>
-      var filler = x._1.toInt
-      var thePiece = stringToChessPiece(x._2)
-      List.fill(filler)(thePiece)
-    }
-    var myInputPieces = myNestedPieces.toList.flatten
-    println(myBoardDimenTuple, myInputPieces)
-    (myBoardDimenTuple, myInputPieces)
   }
 
   def startMain(): Unit = {
@@ -163,12 +186,18 @@ object ChessMain extends App {
       "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n ::"
     )
     var userInput = readLine()
-    var (boardDimen, chessPieces) = normalizeInput(userInput)
-    var board = ChessBoard.generateBoard(boardDimen._1, boardDimen._2)
-    var myPieces = chessPieces
-    calculateTimeTakenAndPrintResults(() => {
-      getAllPosibleConfigs(myPieces, board);
-    })
+    normalizeInput(userInput) match {
+      case Right(value) => {
+        var (boardDimen, chessPieces) = value
+        var board = ChessBoard.generateBoard(boardDimen._1, boardDimen._2)
+        var myPieces = chessPieces
+        calculateTimeTakenAndPrintResults(() => {
+          getAllPosibleConfigs(myPieces, board);
+        })
+      }
+      case Left(value) => { println(value.getMessage); startMain() }
+    }
+
   }
   startMain()
 }
