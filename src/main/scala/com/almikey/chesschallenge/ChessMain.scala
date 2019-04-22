@@ -75,4 +75,30 @@ object ChessMain extends App {
       case Nil => chessBoard
     }
   }
+
+  def createPermutationsOfInput(
+    inputList: List[ChessPiece]
+  ): List[List[ChessPiece]] = {
+    inputList.permutations.toList
+  }
+
+  def shiftStartIndexVariations(inputList: List[ChessPiece],
+                                chessBoard: ChessBoard): Vector[ChessBoard] = {
+    var resultingConfigurations: Vector[ChessBoard] = Vector.empty[ChessBoard]
+    for (i <- 0 to chessBoard.length - 1) {
+      var placesWeCantGoOnBoard = Vector.empty[(Int, Int)]
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard,
+          placesWeCantGoOnBoard,
+          Nil
+        )
+      )
+    }
+    resultingConfigurations.filter(_.size > 0).distinct
+  }
 }
