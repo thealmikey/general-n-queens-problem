@@ -33,6 +33,8 @@ object ChessMain extends App {
                 placesWeCantGo,
                 placedPieces
               )
+            } else if (placedPieces.isEmpty) {
+              Vector.empty[((Int, Int), ChessPiece)]
             } else {
 
               var mPrevIndex = chessBoard.indexOf(
@@ -77,7 +79,7 @@ object ChessMain extends App {
   }
 
   def createPermutationsOfInput(
-      inputList: List[ChessPiece]
+    inputList: List[ChessPiece]
   ): List[List[ChessPiece]] = {
     inputList.permutations.toList
   }
@@ -121,7 +123,52 @@ object ChessMain extends App {
     var endTime = System.currentTimeMillis()
     printResults(theans)
     println("number of permutations:", theans.size)
-    println("time take is:", (endTime - startTime) / 1000, "seconds")
+    println("time take is:", (endTime - startTime), "ms")
   }
 
+//  def normalizeInput(str: String): ((Int, Int), List[ChessPiece]) = {}
+
+  def normalizeInput(myString: String): ((Int, Int), List[ChessPiece]) = {
+    var inputArr = myString.split("board containing")
+    var firstPart = inputArr(0).trim
+    var myBoardDimensionsArr =
+      firstPart.split("x").map(y => y.trim).map(_.toInt)
+    var myBoardDimenTuple = (myBoardDimensionsArr(0), myBoardDimensionsArr(1))
+    var secondPart = inputArr(1).trim
+    var rawPieces = secondPart.split("and").map(x => x.trim).map { y =>
+      var splitSpace = y.split(" ")
+      (splitSpace(0), splitSpace(1))
+    }
+    def stringToChessPiece(str: String): ChessPiece = {
+      str.capitalize match {
+        case "Rooks" | "Rook"     => Rook()
+        case "Knights" | "Knight" => Knight()
+        case "Kings" | "King"     => King()
+        case "Bishops" | "Bishop" => Bishop()
+        case "Queens" | "Queen"   => Queen()
+      }
+    }
+    var myNestedPieces = rawPieces.map { x =>
+      var filler = x._1.toInt
+      var thePiece = stringToChessPiece(x._2)
+      List.fill(filler)(thePiece)
+    }
+    var myInputPieces = myNestedPieces.toList.flatten
+    println(myBoardDimenTuple, myInputPieces)
+    (myBoardDimenTuple, myInputPieces)
+  }
+
+  def startMain(): Unit = {
+    println(
+      "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n ::"
+    )
+    var userInput = readLine()
+    var (boardDimen, chessPieces) = normalizeInput(userInput)
+    var board = ChessBoard.generateBoard(boardDimen._1, boardDimen._2)
+    var myPieces = chessPieces
+    calculateTimeTakenAndPrintResults(() => {
+      getAllPosibleConfigs(myPieces, board);
+    })
+  }
+  startMain()
 }
