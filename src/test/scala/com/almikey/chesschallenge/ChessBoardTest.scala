@@ -23,9 +23,9 @@ class ChessBoardTest extends FlatSpec with Matchers {
   }
   "placing a ChessPiece on 1 by 1 board" should "have a board with the same chessPiece and no attack positions" in {
     var oneByOneBoard = ChessBoard.generateBoard(1, 1)
-    var knightKing = Knight((1, 1))
+    var knightKing = Knight()
     var expected =
-      Right((Vector(((1, 1), Knight(1, 1))), Vector.empty[(Int, Int)]))
+      Right((Vector(((1, 1), Knight())), Vector.empty[(Int, Int)]))
     def alwayPassingCondition = (_: ChessPiece) => false
     var result = ChessBoard.placePieceOnBoard(
       oneByOneBoard,
@@ -38,7 +38,7 @@ class ChessBoardTest extends FlatSpec with Matchers {
   }
   "placing a Knight in position (1,1) on 3 by 3 board" should "have a board with 2 positions under attack (2,3) and (3,2)" in {
     var threeByThreeBoard = ChessBoard.generateBoard(3, 3)
-    var knightKing = Knight((1, 1))
+    var knightKing = Knight()
     var expected = Vector((2, 3), (3, 2))
     //a condition that if true stops the placing of the piece
     def alwayFailingCondition = (_: ChessPiece) => false
@@ -52,9 +52,11 @@ class ChessBoardTest extends FlatSpec with Matchers {
     result.merge._2 shouldEqual expected
   }
 
-  "removing a Knight in position (1,1) on 3 by 3 board with no other pieces" should "have a board with no positions under " in {
+  "removing a Knight in position (1,1) on 3 by 3 board with no other pieces" should "have a board with no positions " +
+    "under " in {
     var threeByThreeBoard = ChessBoard.generateBoard(3, 3)
-    var knightKing = Knight((1, 1))
+    var knightKing = Knight()
+    knightKing.position = (1, 1)
     var expectedPositionsUnderAttack = Vector((2, 3), (3, 2))
     var expected = Vector.empty[(Int, Int)]
     //a condition that if true stops the placing of the piece
@@ -67,44 +69,57 @@ class ChessBoardTest extends FlatSpec with Matchers {
       alwayFalingCondition
     )
     var afterRemovalResult = ChessBoard.removePieceFromBoard(
-      threeByThreeBoard,
+      result.merge._1,
       knightKing,
       (1, 1),
       knightKing.attackingPositions(threeByThreeBoard).toVector
     )
+    println(afterRemovalResult)
     afterRemovalResult.merge._2 shouldEqual expected
   }
 
-  "placing a chess piece in boxes under attack or near pieces it can attack " should "return false to abort action" in {
+  "placing a chess piece in boxes under attack or near pieces it can attack through placePieceOnBoard method " should "return false to abort action" in {
     var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
-    var bishop1 = Bishop(1, 1)
-    var bishop2 = Bishop(1, 2)
+    var bishop1 = Bishop()
+    bishop1.position = (1, 1)
+    var bishop2 = Bishop()
+    bishop2.position = (2, 2)
+
     def alwayFalingCondition = (_: ChessPiece) => false
-    var chessBoard: ChessBoard = Vector(
-      ((1, 1), bishop1),
-      ((1, 2), Blank(1, 2)),
-      ((2, 1), Blank(2, 1)),
-      ((2, 2), Blank(2, 2))
+
+    var (newBoard, noGoSlots) = ChessBoard
+      .placePieceOnBoard(
+        twoByTwoBoard,
+        bishop1,
+        (1, 1),
+        Vector.empty[(Int, Int)],
+        alwayFalingCondition
+      )
+      .merge
+    def chekingCondition =
+      ChessBoard.tellMeIfNoGoMethodBuilder(noGoSlots, newBoard)
+    var result = ChessBoard.placePieceOnBoard(
+      newBoard,
+      bishop2,
+      (2, 2),
+      noGoSlots,
+      chekingCondition
     )
-//takes a list of spots we shouldn't place a piece and creates
-    //a function that returns false when you try to place a piece there
-    def dontGoToBox1 =
-      ChessBoard.tellMeIfNoGoMethodBuilder(Vector((1, 1)), chessBoard)
-    println(chessBoard)
-//    dontGoToBox1(bishop1) shouldEqual false
-    dontGoToBox1(bishop2) shouldEqual false
+    println(result)
+    result.isLeft shouldBe true
   }
-  "adding a piece to a box with another non blank piece" should "return an Either, Left(Chessboard) to indicate failure " in {
+  "adding a piece to a box with another non blank piece i.e. occupied by other piece" should "return an Either, Left(Chessboard) to indicate failure with chessboard remaining the same" in {
     var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
-    var bishop1 = Bishop(1, 1)
-    var bishop2 = Bishop(1, 1)
+    var bishop1 = Bishop()
+    bishop1
+    var bishop2 = Bishop()
     def alwayFalingCondition = (_: ChessPiece) => false
     //Left case
     var chessBoard: ChessBoard = Vector(
       ((1, 1), bishop1),
-      ((1, 2), Blank(1, 2)),
-      ((2, 1), Blank(2, 1)),
-      ((2, 2), Blank(2, 2))
+      ((1, 2), Blank()),
+      ((2, 1), Blank()),
+      ((2, 2), Blank())
     )
 
     var result = ChessBoard.placePieceOnBoard(
@@ -117,10 +132,10 @@ class ChessBoardTest extends FlatSpec with Matchers {
     var expected = Left(
       (
         Vector(
-          ((1, 1), Bishop((1, 1))),
-          ((1, 2), Blank((1, 2))),
-          ((2, 1), Blank((2, 1))),
-          ((2, 2), Blank((2, 2)))
+          ((1, 1), Bishop()),
+          ((1, 2), Blank()),
+          ((2, 1), Blank()),
+          ((2, 2), Blank())
         ),
         Vector()
       )
@@ -129,15 +144,15 @@ class ChessBoardTest extends FlatSpec with Matchers {
   }
   "adding a piece to a box with a blank piece" should "return an Either, Right(Chessboard) to indicate success " in {
     var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
-    var bishop1 = Bishop(1, 1)
-    var bishop2 = Bishop(1, 2)
+    var bishop1 = Bishop()
+    var bishop2 = Bishop()
     def alwayFalingCondition = (_: ChessPiece) => false
     //Left case
     var chessBoard: ChessBoard = Vector(
       ((1, 1), bishop1),
-      ((1, 2), Blank(1, 2)),
-      ((2, 1), Blank(2, 1)),
-      ((2, 2), Blank(2, 2))
+      ((1, 2), Blank()),
+      ((2, 1), Blank()),
+      ((2, 2), Blank())
     )
 
     var result = ChessBoard.placePieceOnBoard(
@@ -150,10 +165,10 @@ class ChessBoardTest extends FlatSpec with Matchers {
     var expected = Right(
       (
         Vector(
-          ((1, 1), Bishop((1, 1))),
-          ((1, 2), Bishop((1, 2))),
-          ((2, 1), Blank((2, 1))),
-          ((2, 2), Blank((2, 2)))
+          ((1, 1), Bishop()),
+          ((1, 2), Bishop()),
+          ((2, 1), Blank()),
+          ((2, 2), Blank())
         ),
         Vector((2, 1))
       )
@@ -162,19 +177,19 @@ class ChessBoardTest extends FlatSpec with Matchers {
   }
   "trying to add a piece that will threaten a piece" should "return an Either, Left(Chessboard) with no change in board to indicate failure " in {
     var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
-    var bishop1 = Bishop(1, 1)
-    var bishop2 = Bishop(2, 2)
+    var knight1 = Knight()
+    var bishop2 = Bishop()
     def alwayFalingCondition = (_: ChessPiece) => false
     //Left case
 
-    var placeBishop1 = ChessBoard.placePieceOnBoard(
+    var placeKnight1 = ChessBoard.placePieceOnBoard(
       twoByTwoBoard,
-      bishop1,
+      knight1,
       (1, 1),
       Vector.empty[(Int, Int)],
       alwayFalingCondition
     )
-    var chessBoard2 = placeBishop1.merge
+    var chessBoard2 = placeKnight1.merge
 //    println(chessBoard2)
     var checkingCondition =
       ChessBoard.tellMeIfNoGoMethodBuilder(chessBoard2._2, chessBoard2._1)
@@ -186,9 +201,9 @@ class ChessBoardTest extends FlatSpec with Matchers {
       checkingCondition
     )
 //no difference by placing bishop2 action as it will fail due to threatening other piece
-    placeBishop2.merge shouldEqual placeBishop1.merge
+    placeBishop2.merge shouldEqual placeKnight1.merge
     placeBishop2.isLeft shouldBe true
-    placeBishop1.isRight shouldBe true
+    placeKnight1.isRight shouldBe true
   }
 
 }

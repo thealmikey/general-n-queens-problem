@@ -15,7 +15,7 @@ which can't capture and basically represents an empty slot
       Vector.empty[((Int, Int), ChessPiece)]
     for (i <- 1 to n) {
       for (j <- 1 to m) {
-        chessBoardSeq = chessBoardSeq.:+(((i, j), Blank((i, j))))
+        chessBoardSeq = chessBoardSeq.:+(((i, j), Blank()))
       }
     }
     chessBoardSeq
@@ -38,7 +38,7 @@ which can't capture and basically represents an empty slot
             (ChessBoard, Vector[(Int, Int)])] = {
     //check if position is blank and is occupied by blank
 //    def checkIfSlotIsEmpty()
-    var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
+    var indexOfPosition = chessBoard.indexOf((position, Blank()))
     chessPiece.position = position
     if (conditionCheck(chessPiece) || indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
@@ -73,8 +73,8 @@ which can't capture and basically represents an empty slot
       var pieceOnBoardUnderAttack = piecesOnBoard.exists { position =>
         attackPositionsOfPiece.contains(position)
       }
-      println("badspots in checker", badSpots)
-      println("s position", s)
+//      println("piecess under attack", pieceOnBoardUnderAttack)
+//      println("s position", s)
       badSpots.contains(s.position) || pieceOnBoardUnderAttack
     }
 
@@ -85,14 +85,14 @@ which can't capture and basically represents an empty slot
       placesWeCantGo: Vector[(Int, Int)]
   ): Either[(ChessBoard, Vector[(Int, Int)]),
             (ChessBoard, Vector[(Int, Int)])] = {
-    var indexOfPosition = chessBoard.indexOf((position, Blank(position)))
-//    println(indexOfPosition)
+    var indexOfPosition = chessBoard.indexOf((position, chessPiece))
+//    println("i removed piece from board")
     if (indexOfPosition == -1) {
       return Left((chessBoard, placesWeCantGo))
     } else {
       //println(chessBoard)
       var changedBoard: ChessBoard =
-        chessBoard.updated(indexOfPosition, (position, Blank(position)))
+        chessBoard.updated(indexOfPosition, (position, Blank()))
       var placesWeCantGo2 = placesWeCantGo
       //      placesWeCantGo2 =
       //        placesWeCantGo2.++(chessPiece.attackingPositions(changedBoard).toVector)

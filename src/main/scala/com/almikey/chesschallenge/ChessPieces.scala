@@ -15,7 +15,7 @@ object ChessPieces {
    */
   sealed trait ChessPiece {
     var board: ChessBoard.ChessBoard = _
-    var position: PiecePosition
+    var position: PiecePosition = _
     def canCaptureOther(otherPiece: ChessPiece, board: ChessBoard): Boolean = {
       var myAttackingPositions = attackingPositions(board)
       if (!otherPiece.isInstanceOf[Blank]) {
@@ -36,14 +36,14 @@ object ChessPieces {
 We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces
 and doesn't have positions it can  attack
    */
-  case class Blank(var position: PiecePosition = (0, 0)) extends ChessPiece {
+  case class Blank() extends ChessPiece {
     override def canCaptureOther(chessPiece: ChessPiece,
                                  board: ChessBoard): Boolean = false
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = Nil
   }
 
-  case class Knight(var position: PiecePosition) extends ChessPiece {
+  case class Knight() extends ChessPiece {
     override def canCaptureOther(otherPiece: ChessPiece,
                                  board: ChessBoard): Boolean = {
       var myAttackingPositions = attackingPositions(board)
@@ -102,23 +102,19 @@ and doesn't have positions it can  attack
     }
   }
 
-  case class Bishop(var position: PiecePosition)
-      extends ChessPiece
-      with DiagonalAttackTrait {
+  case class Bishop() extends ChessPiece with DiagonalAttackTrait {
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       diagonalAttackingPositions(this, board)
 
   }
 
-  case class Rook(var position: PiecePosition)
-      extends ChessPiece
-      with HorizontalVerticalAttackTrait {
+  case class Rook() extends ChessPiece with HorizontalVerticalAttackTrait {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       verticalHorizontalAttackingPositions(this, board)
   }
 
-  case class Queen(var position: PiecePosition)
+  case class Queen()
       extends ChessPiece
       with HorizontalVerticalAttackTrait
       with DiagonalAttackTrait {
@@ -129,7 +125,7 @@ and doesn't have positions it can  attack
       )
   }
 
-  case class King(var position: PiecePosition) extends ChessPiece {
+  case class King() extends ChessPiece {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = {
       if (board.length > 2) {
         var blackList = List.empty[(Int, Int)]
