@@ -41,6 +41,8 @@ and doesn't have positions it can  attack
                                  board: ChessBoard): Boolean = false
 
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] = Nil
+
+    override def toString = "0"
   }
 
   case class Knight() extends ChessPiece {
@@ -100,6 +102,8 @@ and doesn't have positions it can  attack
         Nil
       }
     }
+
+    override def toString: String = "K"
   }
 
   case class Bishop() extends ChessPiece with DiagonalAttackTrait {
@@ -107,11 +111,14 @@ and doesn't have positions it can  attack
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       diagonalAttackingPositions(this, board)
 
+    override def toString: String = "B"
   }
 
   case class Rook() extends ChessPiece with HorizontalVerticalAttackTrait {
     override def attackingPositions(board: ChessBoard): List[(Int, Int)] =
       verticalHorizontalAttackingPositions(this, board)
+
+    override def toString: String = "R"
   }
 
   case class Queen()
@@ -123,6 +130,8 @@ and doesn't have positions it can  attack
         this,
         board
       )
+
+    override def toString: String = "Q"
   }
 
   case class King() extends ChessPiece {
@@ -180,5 +189,7 @@ and doesn't have positions it can  attack
         Nil
       }
     }
+    override def toString: String = "K"
   }
+
 }

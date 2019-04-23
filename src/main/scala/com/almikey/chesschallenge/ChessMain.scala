@@ -87,7 +87,7 @@ object ChessMain extends App {
   }
 
   def createPermutationsOfInput(
-      inputList: List[ChessPiece]
+    inputList: List[ChessPiece]
   ): List[List[ChessPiece]] = {
     inputList.permutations.toList
   }
@@ -135,9 +135,12 @@ without attacking each other
   /*
 
    */
-  def calculateTimeTakenAndPrintResults(f: () => Vector[ChessBoard]) = {
+  def calculateTimeTakenAndPrintResults(boardDimensions: BoardDimensions,
+                                        f: () => Vector[ChessBoard]) = {
     def printResults(results: Vector[ChessBoard]) = {
-      results.foreach(x => println(x + "\n"))
+      results.foreach(x => {
+        println(drawBoard(boardDimensions, x));
+      })
     }
     var startTime = System.currentTimeMillis()
     var theans = f()
@@ -150,7 +153,7 @@ without attacking each other
 //  def normalizeInput(str: String): ((Int, Int), List[ChessPiece]) = {}
   type BoardDimensions = (Int, Int)
   def normalizeInput(
-      myString: String
+    myString: String
   ): Either[Throwable, (BoardDimensions, List[ChessPiece])] = {
     var inputArr = myString.split("board containing|board with|board that has")
     if (inputArr.size < 2) {
@@ -202,6 +205,21 @@ without attacking each other
     }
   }
 
+  def drawBoard(boardDimensions: BoardDimensions,
+                chessBoard: ChessBoard): String = {
+    var theBoard = ""
+    for (i <- chessBoard) {
+      if (i._1._2 == 1) {
+        theBoard = theBoard + s"[${i._2},"
+      } else if (i._1._2 == boardDimensions._2) {
+        theBoard = theBoard + s"${i._2}]\n"
+      } else {
+        theBoard = theBoard + s"${i._2},"
+      }
+    }
+    return theBoard
+  }
+
   def startMain(): Unit = {
     println(
       "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n type 'exit' if you want to leave program"
@@ -215,7 +233,7 @@ without attacking each other
         var (boardDimen, chessPieces) = value
         var board = ChessBoard.generateBoard(boardDimen._1, boardDimen._2)
         var myPieces = chessPieces
-        calculateTimeTakenAndPrintResults(() => {
+        calculateTimeTakenAndPrintResults(boardDimen, () => {
           getAllPosibleConfigs(myPieces, board);
         })
         println("----------SUCCESS-----------")
