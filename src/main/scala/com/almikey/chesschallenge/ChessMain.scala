@@ -204,9 +204,12 @@ without attacking each other
 
   def startMain(): Unit = {
     println(
-      "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n ::"
+      "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n type 'exit' if you want to leave program"
     )
     var userInput = readLine()
+    if (userInput == "exit") {
+      return
+    }
     normalizeInput(userInput) match {
       case Right(value) => {
         var (boardDimen, chessPieces) = value
@@ -215,8 +218,14 @@ without attacking each other
         calculateTimeTakenAndPrintResults(() => {
           getAllPosibleConfigs(myPieces, board);
         })
+        println("----------SUCCESS-----------")
+        startMain()
       }
-      case Left(value) => { println(value.getMessage); startMain() }
+      case Left(value) => {
+        println(value.getMessage);
+        println("please try again")
+        startMain()
+      }
     }
 
   }

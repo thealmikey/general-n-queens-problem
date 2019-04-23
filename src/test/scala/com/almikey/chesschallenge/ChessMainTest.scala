@@ -96,6 +96,14 @@ class ChessMainTest extends FlatSpec with Matchers {
       .size shouldEqual 8
   }
 
+  "get allPossibleConfig method given a 2x2 board containing 2 Kings" should "return 0 possible configurations" in {
+    var chessPiecesList = List(King(), King())
+    var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
+    ChessMain
+      .getAllPosibleConfigs(chessPiecesList, twoByTwoBoard)
+      .size shouldEqual 0
+  }
+
   "normalizeInput method given a text '4x4 board containing 2 Rooks and 4 Knights'" should "return a tuple with board dimensions and a list of chesspieces" in {
     var expectedChessPieceList =
       List(Rook(), Rook(), Knight(), Knight(), Knight(), Knight())
@@ -104,4 +112,5 @@ class ChessMainTest extends FlatSpec with Matchers {
       .normalizeInput("4x4 board containing 2 Rooks and 4 Knights")
       .merge shouldEqual ((expectedBoardDimensions, expectedChessPieceList))
   }
+
 }
