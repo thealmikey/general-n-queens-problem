@@ -103,7 +103,7 @@ and doesn't have positions it can  attack
       }
     }
 
-    override def toString: String = "K"
+    override def toString: String = "N"
   }
 
   case class Bishop() extends ChessPiece with DiagonalAttackTrait {

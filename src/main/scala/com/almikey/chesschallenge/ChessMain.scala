@@ -161,7 +161,11 @@ without attacking each other
     } else {
       var firstPart = inputArr(0).trim
       var myBoardDimensionsArr =
-        firstPart.split("x|X").map(y => y.trim).filter(!_.isEmpty).map(_.toInt)
+        firstPart
+          .split("x|X|×|by")
+          .map(y => y.trim)
+          .filter(!_.isEmpty)
+          .map(_.toInt)
       if (myBoardDimensionsArr.size < 2) {
         Left(new Throwable("bad input for dimensions"))
       } else {
@@ -224,7 +228,7 @@ without attacking each other
     println(
       "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n type 'exit' if you want to leave program"
     )
-    var userInput = readLine()
+    var userInput = readLine().trim
     if (userInput == "exit") {
       return
     }
