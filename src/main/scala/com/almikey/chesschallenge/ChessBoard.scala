@@ -1,5 +1,6 @@
 package com.almikey.chesschallenge
 
+import com.almikey.chesschallenge.ChessMain.BoardDimensions
 import com.almikey.chesschallenge.ChessPieces.{Blank, ChessPiece}
 
 object ChessBoard {
@@ -114,5 +115,20 @@ which can't capture and basically represents an empty slot
       val (a, b) = ls.splitAt(index)
       a ++ b.tail
     }
+  }
+
+  def drawBoard(boardDimensions: BoardDimensions,
+                chessBoard: ChessBoard): String = {
+    var theBoard = ""
+    for (i <- chessBoard) {
+      if (i._1._2 == 1) {
+        theBoard = theBoard + s"[${i._2},"
+      } else if (i._1._2 == boardDimensions._2) {
+        theBoard = theBoard + s"${i._2}]\n"
+      } else {
+        theBoard = theBoard + s"${i._2},"
+      }
+    }
+    return theBoard
   }
 }
