@@ -5,6 +5,14 @@ object ChessMain extends App {
   import com.almikey.chesschallenge.ChessBoard.ChessBoard
   import com.almikey.chesschallenge.ChessPieces._
 
+  /*
+  We add pieces to the board and do backtracking if they're under attack from other pieces
+  or can attack other pieces. We keep state of the pieces we've placed on the board
+  by carrying the board data structure forward in the recursion and we also keep track on the
+  remaining number of pieces yet to be placed in the chessPiecesList.
+  Once we place a piece we track it's state by putting it in placedPieces list
+  which we also carry forward in the recursion
+   */
   def piecePlacerLoop(chessPiecesList: List[ChessPiece],
                       noGoZoneChecker: (ChessPiece) => Boolean,
                       index: Int,
@@ -83,7 +91,14 @@ object ChessMain extends App {
   ): List[List[ChessPiece]] = {
     inputList.permutations.toList
   }
-
+  /*
+It takes an input of chesspieces to be placed and a chessboard. The method places pieces on the
+chessboard starting from index 0,placing and backtracking when needed until exhaustion of options
+where it produces all possible permutations it could
+do i.e. all possible permutations it could do after starting from index 0,so the next time it starts placing the pieces from index 1 and then after it's
+exhausted the placing, it starts by placing the pieces from index 2 and increments by one till the first piece is placed
+at the last slot of the board.
+   */
   def shiftStartIndexVariations(inputList: List[ChessPiece],
                                 chessBoard: ChessBoard): Vector[ChessBoard] = {
     var resultingConfigurations: Vector[ChessBoard] = Vector.empty[ChessBoard]
@@ -103,7 +118,11 @@ object ChessMain extends App {
     }
     resultingConfigurations.filter(_.size > 0).distinct
   }
-
+  /*
+This method produces the most possible combinations by using the permutation
+and starting at different indices to produce the result of all the permutations possible
+without attacking each other
+   */
   def getAllPosibleConfigs(inputList: List[ChessPiece],
                            chessBoard: ChessBoard): Vector[ChessBoard] = {
     var results: Vector[ChessBoard] = Vector.empty[ChessBoard]
@@ -113,7 +132,9 @@ object ChessMain extends App {
     }
     return results.distinct
   }
+  /*
 
+   */
   def calculateTimeTakenAndPrintResults(f: () => Vector[ChessBoard]) = {
     def printResults(results: Vector[ChessBoard]) = {
       results.foreach(x => println(x + "\n"))
@@ -127,10 +148,10 @@ object ChessMain extends App {
   }
 
 //  def normalizeInput(str: String): ((Int, Int), List[ChessPiece]) = {}
-
+  type BoardDimensions = (Int, Int)
   def normalizeInput(
       myString: String
-  ): Either[Throwable, ((Int, Int), List[ChessPiece])] = {
+  ): Either[Throwable, (BoardDimensions, List[ChessPiece])] = {
     var inputArr = myString.split("board containing|board with|board that has")
     if (inputArr.size < 2) {
       Left(new Throwable("bad input from console"))
