@@ -10,7 +10,10 @@ object ChessConfigService {
    by carrying the board data structure forward in the recursion and we also keep track on the
    remaining number of pieces yet to be placed in the chessPiecesList.
    Once we place a piece we track it's state by putting it in placedPieces list
-   which we also carry forward in the recursion
+   which we also carry forward in the recursion.
+   -startPlacingFromStart argument is a boolean that directs our recursion when we backtrack,
+    if true the backtracking algorithm will try to place a piece in the first index of the board
+   if false it will try placing the piece right after the last index of the previously placed piece.
    */
   def piecePlacerLoop(chessPiecesList: List[ChessPiece],
                       noGoZoneChecker: (ChessPiece) => Boolean,
@@ -21,7 +24,6 @@ object ChessConfigService {
                       startPlacingFromStart: Boolean): ChessBoard = {
     chessPiecesList match {
       case x :: xs => {
-        //        println(chessBoard)
         x.position = chessBoard(index)._1
         ChessBoard.placePieceOnBoard(
           chessBoard,
@@ -31,7 +33,6 @@ object ChessConfigService {
           ChessBoard.tellMeIfNoGoZoneMethodBuilder(placesWeCantGo, chessBoard)
         ) match {
           case Left(value) =>
-            //            println("in the left", chessBoard.size)
             if (index + 1 < chessBoard.size) {
               piecePlacerLoop(
                 chessPiecesList,
@@ -73,7 +74,6 @@ object ChessConfigService {
               }
             }
           case Right(value) =>
-            // println(value._2)
             if (startPlacingFromStart) {
               piecePlacerLoop(
                 xs,
@@ -85,20 +85,22 @@ object ChessConfigService {
                 startPlacingFromStart
               )
             } else {
+              var newBoardPieces = value._1.splitAt(index)
+              var newBoard = newBoardPieces._2 ++ newBoardPieces._1
               piecePlacerLoop(
                 xs,
                 noGoZoneChecker: (ChessPiece) => Boolean,
-                index,
-                value._1,
+                0,
+                newBoard,
                 value._2,
                 x :: placedPieces,
-                startPlacingFromStart
+                true
               )
             }
 
         }
       }
-      case Nil => chessBoard
+      case Nil => chessBoard.sortBy(x => (x._1._1, x._1._2))
     }
   }
 
@@ -118,6 +120,7 @@ at the last slot of the board.
   def shiftStartIndexVariations(inputList: List[ChessPiece],
                                 chessBoard: ChessBoard): Vector[ChessBoard] = {
     var resultingConfigurations: Vector[ChessBoard] = Vector.empty[ChessBoard]
+    //start placing pieces from the start of the board, try adding pieces from the first index 0 and increment from there
     for (i <- 0 to chessBoard.length - 1) {
       var placesWeCantGoOnBoard = Vector.empty[(Int, Int)]
       resultingConfigurations = resultingConfigurations.:+(
@@ -132,6 +135,7 @@ at the last slot of the board.
           true
         )
       )
+      //start placing pieces from the index of piece last placed. If last piece was placed at index 5 try index 6
       resultingConfigurations = resultingConfigurations.:+(
         piecePlacerLoop(
           inputList,
@@ -139,6 +143,36 @@ at the last slot of the board.
             .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
           i,
           chessBoard,
+          placesWeCantGoOnBoard,
+          Nil,
+          false
+        )
+      )
+      //start placing pieces incrementally from the opposite side of the board e.g. position(8,8) then (8,7)
+      //incrementing by 1 all the way to the front to (1,1)
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard.reverse,
+          placesWeCantGoOnBoard,
+          Nil,
+          true
+        )
+      )
+      //tart placing pieces incrementally from the opposite side of the board, but instead of trying to keep starting a new
+      // placement from the very end e.g. in a 8x8 board ,trying to add a piece right at (8,8) then (8,7),
+      // place pieces from the index of the piece last placed.
+      // If last piece was placed at index (8,6) try index (8,5) next as you decrement to the start of the board
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard.reverse,
           placesWeCantGoOnBoard,
           Nil,
           false
