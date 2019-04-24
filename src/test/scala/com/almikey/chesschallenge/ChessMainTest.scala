@@ -119,4 +119,45 @@ class ChessMainTest extends FlatSpec with Matchers {
       .normalizeInput("4x4 board containing 2 Rooks and 4 Knights")
       .merge shouldEqual ((expectedBoardDimensions, expectedChessPieceList))
   }
+
+  "getAllPossibleConfigs given 4 Queens on a 4x4 board" should "return 2 permutations" in {
+    var rawInput = "4x4 board containing 4 queens";
+    var (boardDimension: (Int, Int), chessPiecesList: List[ChessPiece]) =
+      ChessMain.normalizeInput(rawInput).merge
+    var chessBoard =
+      ChessBoard.generateBoard(boardDimension._1, boardDimension._2)
+    ChessConfigService
+      .getAllPosibleConfigs(chessPiecesList, chessBoard)
+      .size shouldEqual 2
+  }
+  "getAllPossibleConfigs given 5 Queens on a 5x5 board" should "return 10 permutations" in {
+    var rawInput = "5x5 board containing 5 queens";
+    var (boardDimension: (Int, Int), chessPiecesList: List[ChessPiece]) =
+      ChessMain.normalizeInput(rawInput).merge
+    var chessBoard =
+      ChessBoard.generateBoard(boardDimension._1, boardDimension._2)
+    ChessConfigService
+      .getAllPosibleConfigs(chessPiecesList, chessBoard)
+      .size shouldEqual 10
+  }
+  "getAllPossibleConfigs given 6 Queens on a 6x6 board" should "return 4 permutations" in {
+    var rawInput = "6x6 board containing 6 queens";
+    var (boardDimension: (Int, Int), chessPiecesList: List[ChessPiece]) =
+      ChessMain.normalizeInput(rawInput).merge
+    var chessBoard =
+      ChessBoard.generateBoard(boardDimension._1, boardDimension._2)
+    ChessConfigService
+      .getAllPosibleConfigs(chessPiecesList, chessBoard)
+      .size shouldEqual 4
+  }
+  "getAllPossibleConfigs given 7 Queens on a 7x7 board" should "return 40 permutations" in {
+    var rawInput = "7x7 board containing 7 queens";
+    var (boardDimension: (Int, Int), chessPiecesList: List[ChessPiece]) =
+      ChessMain.normalizeInput(rawInput).merge
+    var chessBoard =
+      ChessBoard.generateBoard(boardDimension._1, boardDimension._2)
+    ChessConfigService
+      .getAllPosibleConfigs(chessPiecesList, chessBoard)
+      .size shouldEqual 40
+  }
 }
