@@ -178,6 +178,97 @@ at the last slot of the board.
           false
         )
       )
+
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2 ++ chessBoard.splitAt(chessBoard.size / 2)._1.reverse,
+          placesWeCantGoOnBoard,
+          Nil,
+          false
+        )
+      )
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2 ++ chessBoard.splitAt(chessBoard.size / 2)._1.reverse,
+          placesWeCantGoOnBoard,
+          Nil,
+          true
+        )
+      )
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2
+            .reverse ++ chessBoard.splitAt(chessBoard.size / 2)._1,
+          placesWeCantGoOnBoard,
+          Nil,
+          false
+        )
+      )
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2
+            .reverse ++ chessBoard.splitAt(chessBoard.size / 2)._1,
+          placesWeCantGoOnBoard,
+          Nil,
+          true
+        )
+      )
+
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2
+            ++ chessBoard.splitAt(chessBoard.size / 2)._1,
+          placesWeCantGoOnBoard,
+          Nil,
+          false
+        )
+      )
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard
+            .splitAt(chessBoard.size / 2)
+            ._2
+            ++ chessBoard.splitAt(chessBoard.size / 2)._1,
+          placesWeCantGoOnBoard,
+          Nil,
+          true
+        )
+      )
+
     }
     resultingConfigurations.filter(_.size > 0).distinct
   }

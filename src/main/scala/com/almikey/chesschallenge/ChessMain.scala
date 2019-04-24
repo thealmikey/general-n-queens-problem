@@ -81,7 +81,7 @@ object ChessMain extends App {
 
   def startMain(): Unit = {
     println(
-      "please input your request in this manner without quotes\n \"3x3 board containing 2 Kings and 1 Rook\"\n type 'exit' if you want to leave program"
+      "please input your request in this manner without quotes\n \"3x3 board with 2 Kings and 1 Rook\"\n type 'exit' if you want to leave program"
     )
     var userInput = readLine().trim
     if (userInput == "exit") {

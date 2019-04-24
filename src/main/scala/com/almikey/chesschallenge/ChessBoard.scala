@@ -56,7 +56,7 @@ which can't capture and basically represents an empty slot
   }
 
   /*
-  Takes a Vector of Positions we cant go to and creates a function that can now take a position
+  Takes a Vector of Positions we cant go to and creates a function that can take a position
   and tell you if it's in that List
   e.g. var noGoPositions = Vector((1,1),(1,2),(1,3))
   now we build a method to tell us if piece is in that list
@@ -73,11 +73,17 @@ which can't capture and basically represents an empty slot
       var pieceOnBoardUnderAttack = piecesOnBoard.exists { position =>
         attackPositionsOfPiece.contains(position)
       }
-//      println("piecess under attack", pieceOnBoardUnderAttack)
-//      println("s position", s)
       badSpots.contains(s.position) || pieceOnBoardUnderAttack
     }
 
+  /*
+  Removes a piece from the board and in turn reduces the attack positions for a particular piece
+  It takes a Chessboard:Vector((Position:(Int,Int),ChessPiece) and a vector of positions under attack
+  Vector[(Int,Int)] it returns an Either with a Left indicating it couldn't remove a piece from the board, due
+  to it not existing in the first place, the Left contains the original Chessboard and the attack positions.
+  If it succeeds it returns a Right((Chessboard,AttackPositions)) where a new chessboard is generated
+  with an inserted piece and new attack positions appended to the placesWeCantGo vector i.e. positions under attack
+   */
   def removePieceFromBoard(
     chessBoard: ChessBoard,
     chessPiece: ChessPiece,
@@ -117,6 +123,8 @@ which can't capture and basically represents an empty slot
     }
   }
 
+  //method to print out a chessboard in the console
+  //in an easier to consume way
   def drawBoard(boardDimensions: BoardDimensions,
                 chessBoard: ChessBoard): String = {
     var theBoard = ""
