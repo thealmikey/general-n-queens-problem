@@ -1,6 +1,6 @@
 package com.almikey.chesschallenge
 
-import com.almikey.chesschallenge.ChessPieces.{Blank, King, Knight, Queen, Rook}
+import com.almikey.chesschallenge.ChessPieces._
 import org.scalatest.{FlatSpec, Matchers}
 
 class ChessMainTest extends FlatSpec with Matchers {
@@ -17,13 +17,14 @@ class ChessMainTest extends FlatSpec with Matchers {
       )
     var startingIndex = 0
     var placePieces = Nil
-    var result = ChessMain.piecePlacerLoop(
+    var result = ChessConfigService.piecePlacerLoop(
       chessPieces,
       noGoZoneChecker,
       startingIndex,
       chessBoard,
       placesWeCantGoOnBoard,
-      placePieces
+      placePieces,
+      true
     )
     result shouldEqual Vector(((1, 1), King()))
   }
@@ -37,13 +38,14 @@ class ChessMainTest extends FlatSpec with Matchers {
         chessBoard
       )
     var startingIndex = 0
-    var result = ChessMain.piecePlacerLoop(
+    var result = ChessConfigService.piecePlacerLoop(
       chessPieces,
       noGoZoneChecker,
       startingIndex,
       chessBoard,
       placesWeCantGoOnBoard,
-      Nil
+      Nil,
+      true
     )
     result shouldEqual Nil
   }
@@ -57,13 +59,14 @@ class ChessMainTest extends FlatSpec with Matchers {
         chessBoard
       )
     var startingIndex = 0
-    var result = ChessMain.piecePlacerLoop(
+    var result = ChessConfigService.piecePlacerLoop(
       chessPieces,
       noGoZoneChecker,
       startingIndex,
       chessBoard,
       placesWeCantGoOnBoard,
-      Nil
+      Nil,
+      true
     )
     result shouldEqual Vector(
       ((1, 1), Knight()),
@@ -74,16 +77,20 @@ class ChessMainTest extends FlatSpec with Matchers {
   }
   "creatingPermutations method given a chess list with 1 item" should "return a list of size 1 item" in {
     var chessPiecesList = List(Queen())
-    ChessMain.createPermutationsOfInput(chessPiecesList).size shouldEqual 1
+    ChessConfigService
+      .createPermutationsOfInput(chessPiecesList)
+      .size shouldEqual 1
   }
   "creatingPermutations method given a list with 1 item" should "return a list of size 1 item" in {
     var chessPiecesList = List(Queen())
-    ChessMain.createPermutationsOfInput(chessPiecesList).size shouldEqual 1
+    ChessConfigService
+      .createPermutationsOfInput(chessPiecesList)
+      .size shouldEqual 1
   }
   "get allPossibleConfig method given a 3x3 board containing 2 Kings and 1 Rook" should "return 4 unique configurations" in {
     var chessPiecesList = List(King(), King(), Rook())
     var threeByThreeBoard = ChessBoard.generateBoard(3, 3)
-    ChessMain
+    ChessConfigService
       .getAllPosibleConfigs(chessPiecesList, threeByThreeBoard)
       .size shouldEqual 4
   }
@@ -91,7 +98,7 @@ class ChessMainTest extends FlatSpec with Matchers {
     var chessPiecesList =
       List(Rook(), Rook(), Knight(), Knight(), Knight(), Knight())
     var fourByFourBoard = ChessBoard.generateBoard(4, 4)
-    ChessMain
+    ChessConfigService
       .getAllPosibleConfigs(chessPiecesList, fourByFourBoard)
       .size shouldEqual 8
   }
@@ -99,7 +106,7 @@ class ChessMainTest extends FlatSpec with Matchers {
   "get allPossibleConfig method given a 2x2 board containing 2 Kings" should "return 0 possible configurations" in {
     var chessPiecesList = List(King(), King())
     var twoByTwoBoard = ChessBoard.generateBoard(2, 2)
-    ChessMain
+    ChessConfigService
       .getAllPosibleConfigs(chessPiecesList, twoByTwoBoard)
       .size shouldEqual 0
   }
@@ -112,5 +119,4 @@ class ChessMainTest extends FlatSpec with Matchers {
       .normalizeInput("4x4 board containing 2 Rooks and 4 Knights")
       .merge shouldEqual ((expectedBoardDimensions, expectedChessPieceList))
   }
-
 }

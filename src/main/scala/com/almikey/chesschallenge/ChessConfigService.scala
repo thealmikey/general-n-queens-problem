@@ -17,7 +17,8 @@ object ChessConfigService {
                       index: Int,
                       chessBoard: ChessBoard,
                       placesWeCantGo: Vector[(Int, Int)],
-                      placedPieces: List[ChessPiece]): ChessBoard = {
+                      placedPieces: List[ChessPiece],
+                      startPlacingFromStart: Boolean): ChessBoard = {
     chessPiecesList match {
       case x :: xs => {
         //        println(chessBoard)
@@ -38,7 +39,8 @@ object ChessConfigService {
                 index + 1,
                 chessBoard,
                 placesWeCantGo,
-                placedPieces
+                placedPieces,
+                startPlacingFromStart
               )
             } else if (placedPieces.isEmpty) {
               Vector.empty[((Int, Int), ChessPiece)]
@@ -63,7 +65,8 @@ object ChessConfigService {
                   mPrevIndex + 1,
                   prevBoard,
                   prevNoGo,
-                  placedPieces.tail
+                  placedPieces.tail,
+                  startPlacingFromStart
                 )
               } else {
                 Vector.empty[((Int, Int), ChessPiece)]
@@ -71,14 +74,28 @@ object ChessConfigService {
             }
           case Right(value) =>
             // println(value._2)
-            piecePlacerLoop(
-              xs,
-              noGoZoneChecker: (ChessPiece) => Boolean,
-              0,
-              value._1,
-              value._2,
-              x :: placedPieces
-            )
+            if (startPlacingFromStart) {
+              piecePlacerLoop(
+                xs,
+                noGoZoneChecker: (ChessPiece) => Boolean,
+                0,
+                value._1,
+                value._2,
+                x :: placedPieces,
+                startPlacingFromStart
+              )
+            } else {
+              piecePlacerLoop(
+                xs,
+                noGoZoneChecker: (ChessPiece) => Boolean,
+                index,
+                value._1,
+                value._2,
+                x :: placedPieces,
+                startPlacingFromStart
+              )
+            }
+
         }
       }
       case Nil => chessBoard
@@ -111,7 +128,20 @@ at the last slot of the board.
           i,
           chessBoard,
           placesWeCantGoOnBoard,
-          Nil
+          Nil,
+          true
+        )
+      )
+      resultingConfigurations = resultingConfigurations.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
+          i,
+          chessBoard,
+          placesWeCantGoOnBoard,
+          Nil,
+          false
         )
       )
     }
