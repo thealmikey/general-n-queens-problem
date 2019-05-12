@@ -1,7 +1,1 @@
-For a 7x7 board with 2 Kings, 2 Queens, 2 Bishops and 1 Knight.
-
-Time taken to get final score : **783.709 seconds**
-
-Number of unique configurations : **66177**
-
-    
+chess piece placement on a chessboard for N x M boards where none of the pieces are in a position to capture each other
