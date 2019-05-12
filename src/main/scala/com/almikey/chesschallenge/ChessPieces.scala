@@ -33,8 +33,7 @@ object ChessPieces {
     def attackingPositions(board: ChessBoard): List[(Int, Int)]
   }
   /*
-We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces
-and doesn't have positions it can  attack
+We have a Blank piece as ChessPiece to represent an empty slot on the board. It can't capture other pieces and doesn't have positions it can  attack
    */
   case class Blank() extends ChessPiece {
     override def canCaptureOther(chessPiece: ChessPiece,

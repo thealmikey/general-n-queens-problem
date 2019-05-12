@@ -121,155 +121,7 @@ at the last slot of the board.
                                 chessBoard: ChessBoard): Vector[ChessBoard] = {
     var resultingConfigurations: Vector[ChessBoard] = Vector.empty[ChessBoard]
     //start placing pieces from the start of the board, try adding pieces from the first index 0 and increment from there
-    for (i <- 0 to chessBoard.length - 1) {
-      var placesWeCantGoOnBoard = Vector.empty[(Int, Int)]
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard,
-          placesWeCantGoOnBoard,
-          Nil,
-          true
-        )
-      )
-      //start placing pieces from the index of piece last placed. If last piece was placed at index 5 try index 6
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard,
-          placesWeCantGoOnBoard,
-          Nil,
-          false
-        )
-      )
-      //start placing pieces incrementally from the opposite side of the board e.g. position(8,8) then (8,7)
-      //incrementing by 1 all the way to the front to (1,1)
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard.reverse,
-          placesWeCantGoOnBoard,
-          Nil,
-          true
-        )
-      )
-      //tart placing pieces incrementally from the opposite side of the board, but instead of trying to keep starting a new
-      // placement from the very end e.g. in a 8x8 board ,trying to add a piece right at (8,8) then (8,7),
-      // place pieces from the index of the piece last placed.
-      // If last piece was placed at index (8,6) try index (8,5) next as you decrement to the start of the board
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard.reverse,
-          placesWeCantGoOnBoard,
-          Nil,
-          false
-        )
-      )
 
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2 ++ chessBoard.splitAt(chessBoard.size / 2)._1.reverse,
-          placesWeCantGoOnBoard,
-          Nil,
-          false
-        )
-      )
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2 ++ chessBoard.splitAt(chessBoard.size / 2)._1.reverse,
-          placesWeCantGoOnBoard,
-          Nil,
-          true
-        )
-      )
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2
-            .reverse ++ chessBoard.splitAt(chessBoard.size / 2)._1,
-          placesWeCantGoOnBoard,
-          Nil,
-          false
-        )
-      )
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2
-            .reverse ++ chessBoard.splitAt(chessBoard.size / 2)._1,
-          placesWeCantGoOnBoard,
-          Nil,
-          true
-        )
-      )
-
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2
-            ++ chessBoard.splitAt(chessBoard.size / 2)._1,
-          placesWeCantGoOnBoard,
-          Nil,
-          false
-        )
-      )
-      resultingConfigurations = resultingConfigurations.:+(
-        piecePlacerLoop(
-          inputList,
-          ChessBoard
-            .tellMeIfNoGoZoneMethodBuilder(placesWeCantGoOnBoard, chessBoard),
-          i,
-          chessBoard
-            .splitAt(chessBoard.size / 2)
-            ._2
-            ++ chessBoard.splitAt(chessBoard.size / 2)._1,
-          placesWeCantGoOnBoard,
-          Nil,
-          true
-        )
-      )
-
-    }
     resultingConfigurations.filter(_.size > 0).distinct
   }
   /*
@@ -280,9 +132,22 @@ without attacking each other
   def getAllPosibleConfigs(inputList: List[ChessPiece],
                            chessBoard: ChessBoard): Vector[ChessBoard] = {
     var results: Vector[ChessBoard] = Vector.empty[ChessBoard]
-    var inputPermutations = createPermutationsOfInput(inputList)
-    for (permutation <- inputPermutations) {
-      results = results ++ shiftStartIndexVariations(permutation, chessBoard)
+    var theIter = chessBoard.permutations
+    while (theIter.hasNext) {
+      var board = theIter.next()
+//      println(board)
+      results = results.:+(
+        piecePlacerLoop(
+          inputList,
+          ChessBoard
+            .tellMeIfNoGoZoneMethodBuilder(Vector.empty[(Int, Int)], board),
+          0,
+          board,
+          Vector.empty[(Int, Int)],
+          Nil,
+          true
+        )
+      )
     }
     return results.distinct
   }
